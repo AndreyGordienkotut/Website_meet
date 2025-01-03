@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website meet</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+</head>
+<header>
+    <a href="/Main">Main</a>
+    <a href="/relationship">Relationship</a>
+    <a href="/changeProfile" class="btn btn-primary">Изменить профиль</a>
+</header>
+<body>
+<h1>Profile Information</h1>
+<div>
+    <!-- Отображаем первую фотографию профиля -->
+<!--    <img th:src="@{'/images/' + ${photos[0].src}}" alt="User Avatar" style="width:150px;height:150px;">-->
+    <div th:if="${photos != null and photos.size() > 0}">
+        <h3>Photos:</h3>
+        <div th:each="photo : ${photos}">
+            <img th:src="@{/images/{src}(src=${photo.src})}" alt="User Photo" style="width:150px;height:150px;">
+        </div>
+    </div>
+    <p><strong>Name:</strong> <span th:text="${profile.name}"> - </span></p>
+    <p><strong>Birth Date:</strong> <span th:text="${profile.birthDate}"> - </span></p>
+    <p><strong>Description:</strong> <span th:text="${profile.description}"> - </span></p>
+    <p><strong>Growth:</strong> <span th:text="${profile.growth}"> - </span></p>
+    <p><strong>Work:</strong> <span th:text="${profile.work}"> - </span></p>
+    <p><strong>Alcohol:</strong> <span th:text="${profile.alcohol}"> - </span></p>
+    <p><strong>Smoking:</strong> <span th:text="${profile.smoking}"> - </span></p>
+    <p><strong>Gender:</strong><span th:text="${profile.gender != null ? profile.gender.name : ' - '}"> - </span></p>
+    <p><strong>Orientation: </strong> <span th:text="${profile.orientation != null ? profile.orientation.name : '-'}"> - </span></p>
+    <p><strong>City: </strong><span th:text="${profile.city.name}">-</span></p>
+    <p><strong>Interest website: </strong><span th:text="${profile.interest_website != null ? profile.interest_website.name : '-'}"> - </span></p>
+    <p><strong>Tags: </strong><span th:each="tag : ${tags}"><span th:text="${tag.name}" class="tag"></span>&nbsp;</span></p>
+
+    <p><strong>Count complaints:</strong> <span th:text="${profile.count_complaint}">-</span></p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Изменение профиля</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <style>
+    .photo-grid {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .photo-slot {
+      width: 150px;
+      height: 150px;
+      border: 1px solid #ddd;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      position: relative;
+    }
+     .photo-slot button {
+    position: absolute;
+    top: 155px;
+    right: 5px;
+    z-index: 10;
+  }
+  .photo-slot img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover;
+  }
+
+    .photo-slot img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: cover;
+    }
+  </style>
+</head>
+<body>
+<div class="container mt-4">
+  <h1>Изменение профиля</h1>
+  <form action="/updateProfile" method="post" enctype="multipart/form-data">
+    <!-- Фотографии -->
+    <div class="mb-4">
+      <h4>Ваши фотографии:</h4>
+      <div class="photo-grid">
+        <div class="photo-slot" onclick="triggerFileInput(1)">
+          <img id="preview1" th:src="${photos.size() > 0 ? '/images/' + photos[0].src : '/images/placeholder.png'}" alt="Photo 1">
+          <input type="hidden" name="photoIds[0]" th:value="${photos.size() > 0 ? photos[0].id : 0}">
+        </div>
+        <div class="photo-slot" onclick="triggerFileInput(2)">
+          <img id="preview2" th:src="${photos.size() > 1 ? '/images/' + photos[1].src : '/images/placeholder.png'}" alt="Photo 2">
+          <input type="hidden" name="photoIds[1]" th:value="${photos.size() > 1 ? photos[1].id : 0}">
+        </div>
+        <div class="photo-slot" onclick="triggerFileInput(3)">
+          <img id="preview3" th:src="${photos.size() > 2 ? '/images/' + photos[2].src : '/images/placeholder.png'}" alt="Photo 3">
+          <input type="hidden" name="photoIds[2]" th:value="${photos.size() > 2 ? photos[2].id : 0}">
+        </div>
+        <div class="photo-slot" onclick="triggerFileInput(4)">
+          <img id="preview4" th:src="${photos.size() > 3 ? '/images/' + photos[3].src : '/images/placeholder.png'}" alt="Photo 4">
+          <input type="hidden" name="photoIds[3]" th:value="${photos.size() > 3 ? photos[3].id : 0}">
+        </div>
+      </div>
+      <!-- Поля загрузки файлов -->
+      <input type="file" name="photos" id="fileInput1" style="display: none;" onchange="previewFile(1)">
+      <input type="file" name="photos" id="fileInput2" style="display: none;" onchange="previewFile(2)">
+      <input type="file" name="photos" id="fileInput3" style="display: none;" onchange="previewFile(3)">
+      <input type="file" name="photos" id="fileInput4" style="display: none;" onchange="previewFile(4)">
+    </div>
+
+    <!-- Остальные данные профиля -->
+    <div class="mb-3">
+      <label for="birthDate" class="form-label">Дата рождения:</label>
+      <input type="date" class="form-control" name="birthDate" id="birthDate" th:value="${profile.birthDate}">
+    </div>
+    <div class="mb-3">
+      <label for="description" class="form-label">Описание:</label>
+      <textarea class="form-control" name="description" id="description" rows="3" th:text="${profile.description}"></textarea>
+    </div>
+    <div class="mb-3">
+      <label for="growth" class="form-label">Рост:</label>
+      <input type="number" class="form-control" name="growth" id="growth" th:value="${profile.growth}">
+    </div>
+
+    <div class="mb-3">
+      <label for="work" class="form-label">Работа:</label>
+      <input type="text" class="form-control" name="work" id="work" th:value="${profile.work}">
+    </div>
+
+    <div class="mb-3">
+      <label for="cityId" class="form-label">Город:</label>
+      <select class="form-control" name="cityId" id="cityId">
+        <option th:each="city : ${cities}" th:value="${city.id}" th:text="${city.name}" th:selected="${city.id == profile.city.id}"></option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label for="orientationId" class="form-label">Ориентация:</label>
+      <select class="form-control" name="orientationId" id="orientationId">
+        <option th:each="orientation : ${orientations}"
+                th:value="${orientation.id}"
+                th:text="${orientation.name}"
+                th:selected="${orientation.id == profile.orientation?.id}">
+        </option>
+
+      </select>
+    </div>
+
+    <!-- Поля для алкоголя и курения -->
+    <div class="form-check">
+      <input type="checkbox" class="form-check-input" name="alcohol" id="alcohol" th:checked="${profile.alcohol}">
+      <label for="alcohol" class="form-check-label">Употребление алкоголя</label>
+    </div>
+    <div class="form-check">
+      <input type="checkbox" class="form-check-input" name="smoking" id="smoking" th:checked="${profile.smoking}">
+      <label for="smoking" class="form-check-label">Курение</label>
+    </div>
+    <!-- Добавьте другие поля профиля по необходимости -->
+    <button type="submit" class="btn btn-success mt-3">Сохранить изменения</button>
+  </form>
+</div>
+
+<script>
+  function triggerFileInput(index) {
+    document.getElementById('fileInput' + index).click();
+  }
+
+  function previewFile(index) {
+    const fileInput = document.getElementById('fileInput' + index);
+    const previewImg = document.getElementById('preview' + index);
+    const file = fileInput.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            previewImg.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+</script>
+</body>
+</html>

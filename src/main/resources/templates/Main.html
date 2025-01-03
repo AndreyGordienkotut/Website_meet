@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Website meet</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+</head>
+<header>
+  <nav>
+    <a href="/profile">Profile</a> <!-- Ссылка на страницу профиля -->
+    <a href="/logout">Logout</a>
+      <a href="/relationship">Relationship</a>
+  </nav>
+</header>
+<body>
+<div>
+    <h3>Фильтр по возрасту и полу</h3>
+    <form th:action="@{/filterByAgeAndGender}" method="post">
+        <label for="ageRange">Возраст:</label>
+        <input type="range" id="ageMin" name="ageMin" min="16" max="99" value="16">
+        <input type="range" id="ageMax" name="ageMax" min="16" max="99" value="99">
+        <span id="ageMinValue">16</span> - <span id="ageMaxValue">99</span>
+        <br>
+        <label for="gender">Пол:</label>
+        <select id="genderId" name="genderId">
+            <option value="">Любой</option> <!-- если значение пустое, фильтрация по полу игнорируется -->
+            <option value="1">Чоловік</option> <!-- предположим, что ID "1" — это "Чоловік" -->
+            <option value="2">Жінка</option> <!-- предположим, что ID "2" — это "Жінка" -->
+            <option value="3">Інше</option>
+        </select>
+        <button type="submit" class="btn btn-primary">Применить</button>
+    </form>
+</div>
+<div>
+  <h2>Random User Profile</h2>
+
+  <div th:if="${profile != null}">
+
+<!--    <div th:if="${photos != null and photos.size() > 0}">-->
+<!--      <div th:each="photo : ${photos}">-->
+<!--        <img th:src="@{'/images/' +${photo.src}}" alt="User Photo" style="width: 150px; height: 150px;">-->
+<!--      </div>-->
+<!--    </div>-->
+
+<!--    <div th:if="${photos != null and photos.size() > 0}">-->
+<!--      <div th:each="photo : ${photos}">-->
+<!--        <img th:src="@{/images/{src}(src=${photo.src})}" alt="User Photo" style="width: 150px; height: 150px;">-->
+<!--      </div>-->
+<!--    </div>-->
+      <div th:if="${photos != null and photos.size() > 0}">
+          <h3>Photos:</h3>
+          <div th:each="photo : ${photos}">
+              <img th:src="@{/images/{src}(src=${photo.src})}" alt="User Photo" style="width:150px;height:150px;">
+          </div>
+      </div>
+
+    <p>Name: <span th:text="${profile.name}">John Doe</span></p>
+    <p>Birth Date: <span th:text="${profile.birthDate}">01/01/2000</span></p>
+    <p>Description: <span th:text="${profile.description}"> - </span></p>
+    <p th:if="${profile.growth != null}">Growth: <span th:text="${profile.growth}"> - </span> cm</p>
+    <p th:if="${profile.work != null}">Work: <span th:text="${profile.work}"> - </span></p>
+    <p th:if="${profile.alcohol != null}">Alcohol: <span th:text="${profile.alcohol}"> - </span></p>
+    <p th:if="${profile.smoking != null}">Smoking: <span th:text="${profile.smoking}"> - </span></p>
+      <p th:if="${profile.gender != null}">Gender: <span th:text="${profile.gender != null ? profile.gender.name : '-'}"> - </span></p>
+      <p th:if="${profile.orientation != null}">Orientation: <span th:text="${profile.orientation != null ? profile.orientation.name : '-'}"> - </span></p>
+      <p>City: <span th:text="${profile.city.name}">-</span></p>
+      <p th:if="${profile.interest_website != null}">Interest website: <span th:text="${profile.interest_website != null ? profile.interest_website.name : '-'}"> - </span></p>
+      <p th:if="${tags != null and tags.size() > 0}">Tags: <span th:each="tag : ${tags}"><span th:text="${tag.name}" class="tag"></span>&nbsp;</span></p>
+    <form th:action="@{/like}" method="post">
+      <input type="hidden" name="currentUserId" th:value="${currentUserId}">
+      <input type="hidden" name="likedUserId" th:value="${profile.user_id}">
+      <button type="submit" class="btn btn-success">Like</button>
+    </form>
+
+    <form th:action="@{/dislike}" method="post">
+      <input type="hidden" name="currentUserId" th:value="${currentUserId}">
+      <input type="hidden" name="dislikedUserId" th:value="${profile.user_id}">
+      <button type="submit" class="btn btn-danger">Dislike</button>
+    </form>
+      <form th:action="@{/skip}" method="post">
+          <input type="hidden" name="currentUserId" th:value="${currentUserId}">
+          <button type="submit" class="btn btn-secondary">Пропустить</button>
+      </form>
+      <form th:action="@{/complaint}" method="post">
+          <input type="hidden" name="currentUserId" th:value="${currentUserId}">
+          <input type="hidden" name="userId" th:value="${profile.user_id}">
+          <label for="complaintId">Выберите причину:</label>
+          <select id="complaintId" name="complaintId">
+              <option th:each="complaint : ${complaints}" th:value="${complaint.id}" th:text="${complaint.name}"></option>
+          </select>
+          <button type="submit" class="btn btn-warning">Пожаловаться</button>
+      </form>
+
+  </div>
+
+
+</div>
+
+</body>
+<script>
+  const ageMin = document.getElementById('ageMin');
+  const ageMax = document.getElementById('ageMax');
+  const ageMinValue = document.getElementById('ageMinValue');
+  const ageMaxValue = document.getElementById('ageMaxValue');
+
+  ageMin.addEventListener('input', () => ageMinValue.textContent = ageMin.value);
+  ageMax.addEventListener('input', () => ageMaxValue.textContent = ageMax.value);
+</script>
+</html>

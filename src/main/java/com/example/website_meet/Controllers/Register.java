@@ -33,7 +33,6 @@ public class Register {
     private final profileHasPhotoRepository profileHasPhotoRepository;
     private final profile_tagRepository profile_tagRepository;
 
-
     private final tagRepository tagRepository;
 
 
